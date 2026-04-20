@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import QRCodeStyling from "qr-code-styling"
 import {
   Card,
@@ -28,7 +28,6 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Download,
   Link2,
@@ -45,6 +44,31 @@ import {
   QrCode,
 } from "lucide-react"
 
+type ErrorCorrectionLevel = "L" | "M" | "Q" | "H"
+type DotStyle =
+  | "rounded"
+  | "dots"
+  | "classy"
+  | "classy-rounded"
+  | "square"
+  | "extra-rounded"
+type CornerSquareStyle =
+  | "dot"
+  | "square"
+  | "extra-rounded"
+  | "rounded"
+  | "dots"
+  | "classy"
+  | "classy-rounded"
+type CornerDotStyle =
+  | "dot"
+  | "square"
+  | "rounded"
+  | "dots"
+  | "classy"
+  | "classy-rounded"
+  | "extra-rounded"
+
 const qrTypes = [
   { key: "url", label: "Website URL", icon: Link2 },
   { key: "text", label: "Plain Text", icon: FileText },
@@ -59,7 +83,7 @@ const qrTypes = [
   { key: "file", label: "File / PDF URL", icon: FileText },
   { key: "app", label: "App Download", icon: Smartphone },
   { key: "company", label: "Company Profile", icon: Building2 },
-]
+] as const
 
 const defaultFields = {
   url: { url: "https://example.com" },
@@ -121,7 +145,7 @@ const colorPresets = [
   { name: "Forest", dark: "#14532d", light: "#f0fdf4" },
   { name: "Royal", dark: "#312e81", light: "#eef2ff" },
   { name: "Burgundy", dark: "#7f1d1d", light: "#fef2f2" },
-]
+] as const
 
 function pad(num: number) {
   return String(num).padStart(2, "0")
@@ -327,16 +351,18 @@ export default function App() {
   const [margin, setMargin] = useState(16)
   const [darkColor, setDarkColor] = useState("#000000")
   const [lightColor, setLightColor] = useState("#ffffff")
-  const [errorCorrection, setErrorCorrection] = useState("Q")
-  const [dotStyle, setDotStyle] = useState("rounded")
-  const [cornerSquareStyle, setCornerSquareStyle] = useState("extra-rounded")
-  const [cornerDotStyle, setCornerDotStyle] = useState("dot")
+  const [errorCorrection, setErrorCorrection] =
+    useState<ErrorCorrectionLevel>("Q")
+  const [dotStyle, setDotStyle] = useState<DotStyle>("rounded")
+  const [cornerSquareStyle, setCornerSquareStyle] =
+    useState<CornerSquareStyle>("extra-rounded")
+  const [cornerDotStyle, setCornerDotStyle] = useState<CornerDotStyle>("dot")
   const [fileName, setFileName] = useState("company-qr")
   const [showGuide] = useState(true)
   const [logoImage, setLogoImage] = useState("")
   const [hideBackgroundDots, setHideBackgroundDots] = useState(true)
 
-  const qrRef = useRef<any>(null)
+  const qrRef = useRef<QRCodeStyling | null>(null)
   const wrapperRef = useRef<HTMLDivElement | null>(null)
 
   const data = useMemo(
@@ -435,12 +461,12 @@ export default function App() {
 
   const downloadQR = async (format: "png" | "svg") => {
     if (!qrRef.current) return
-    await qrRef.current.update({ width: size, height: size })
+    qrRef.current.update({ width: size, height: size })
     await qrRef.current.download({
       name: fileName || "qr-code",
       extension: format,
     })
-    await qrRef.current.update({ width: 320, height: 320 })
+    qrRef.current.update({ width: 320, height: 320 })
   }
 
   const renderTypeForm = () => {
@@ -814,12 +840,9 @@ export default function App() {
             <Badge className="mb-3 rounded-full px-3 py-1 text-xs">
               QR Studio • Free Tool
             </Badge>
-            <div className="flex items-center">
-              <img src="../public/favicon.png" width={96} />
-              <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
-                QR Generator
-              </h1>
-            </div>
+            <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
+              Company QR Generator
+            </h1>
             <p className="mt-2 max-w-3xl text-sm text-slate-600 md:text-base">
               Create print-ready QR codes for websites, contact cards, Wi-Fi,
               locations, events, apps, company profiles, files, and more. Export
@@ -962,7 +985,10 @@ export default function App() {
                     <div className="grid min-w-0 gap-4 md:grid-cols-3">
                       <div className="grid min-w-0 gap-2">
                         <Label>Dots Style</Label>
-                        <Select value={dotStyle} onValueChange={setDotStyle}>
+                        <Select
+                          value={dotStyle}
+                          onValueChange={(v) => setDotStyle(v as DotStyle)}
+                        >
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
@@ -985,7 +1011,9 @@ export default function App() {
                         <Label>Corner Square</Label>
                         <Select
                           value={cornerSquareStyle}
-                          onValueChange={setCornerSquareStyle}
+                          onValueChange={(v) =>
+                            setCornerSquareStyle(v as CornerSquareStyle)
+                          }
                         >
                           <SelectTrigger>
                             <SelectValue />
@@ -996,6 +1024,12 @@ export default function App() {
                             <SelectItem value="extra-rounded">
                               Extra Rounded
                             </SelectItem>
+                            <SelectItem value="rounded">Rounded</SelectItem>
+                            <SelectItem value="dots">Dots</SelectItem>
+                            <SelectItem value="classy">Classy</SelectItem>
+                            <SelectItem value="classy-rounded">
+                              Classy Rounded
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1004,7 +1038,9 @@ export default function App() {
                         <Label>Corner Dot</Label>
                         <Select
                           value={cornerDotStyle}
-                          onValueChange={setCornerDotStyle}
+                          onValueChange={(v) =>
+                            setCornerDotStyle(v as CornerDotStyle)
+                          }
                         >
                           <SelectTrigger>
                             <SelectValue />
@@ -1012,6 +1048,15 @@ export default function App() {
                           <SelectContent>
                             <SelectItem value="square">Square</SelectItem>
                             <SelectItem value="dot">Dot</SelectItem>
+                            <SelectItem value="rounded">Rounded</SelectItem>
+                            <SelectItem value="dots">Dots</SelectItem>
+                            <SelectItem value="classy">Classy</SelectItem>
+                            <SelectItem value="classy-rounded">
+                              Classy Rounded
+                            </SelectItem>
+                            <SelectItem value="extra-rounded">
+                              Extra Rounded
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1034,7 +1079,9 @@ export default function App() {
                         <Label>Error Correction</Label>
                         <Select
                           value={errorCorrection}
-                          onValueChange={setErrorCorrection}
+                          onValueChange={(v) =>
+                            setErrorCorrection(v as ErrorCorrectionLevel)
+                          }
                         >
                           <SelectTrigger>
                             <SelectValue />
@@ -1238,12 +1285,12 @@ export default function App() {
             </Card>
           </div>
         </div>
-      </div>
 
-      <footer className="mt-10 border-t pt-6 text-center text-sm text-slate-500">
-        Free QR Generator • Built with ❤️ by{" "}
-        <span className="font-semibold text-slate-800">Saad Khan</span>
-      </footer>
+        <footer className="mt-10 border-t pt-6 text-center text-sm text-slate-500">
+          Free QR Generator • Built by{" "}
+          <span className="font-semibold text-slate-800">Saad Khan</span>
+        </footer>
+      </div>
     </div>
   )
 }
