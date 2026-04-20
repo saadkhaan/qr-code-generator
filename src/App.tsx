@@ -840,9 +840,16 @@ export default function App() {
             <Badge className="mb-3 rounded-full px-3 py-1 text-xs">
               QR Studio • Free Tool
             </Badge>
-            <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
-              Company QR Generator
-            </h1>
+            <div className="flex items-center">
+              <img
+                src="../public/favicon.png"
+                alt="free qr code generator"
+                width={96}
+              />
+              <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
+                QR Generator
+              </h1>
+            </div>
             <p className="mt-2 max-w-3xl text-sm text-slate-600 md:text-base">
               Create print-ready QR codes for websites, contact cards, Wi-Fi,
               locations, events, apps, company profiles, files, and more. Export
