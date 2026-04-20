@@ -842,7 +842,7 @@ export default function App() {
             </Badge>
             <div className="flex items-center">
               <img
-                src="../public/favicon.png"
+                src="./favicon.png"
                 alt="free qr code generator"
                 width={96}
               />
