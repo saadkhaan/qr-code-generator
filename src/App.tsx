@@ -841,11 +841,7 @@ export default function App() {
               QR Studio • Free Tool
             </Badge>
             <div className="flex items-center">
-              <img
-                src="./favicon.png"
-                alt="free qr code generator"
-                width={96}
-              />
+              <img src="/favicon.png" alt="free qr code generator" width={96} />
               <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
                 QR Generator
               </h1>
@@ -1295,7 +1291,7 @@ export default function App() {
 
         <footer className="mt-10 border-t pt-6 text-center text-sm text-slate-500">
           Free QR Generator • Built by{" "}
-          <span className="font-semibold text-slate-800">Saad Khan</span>
+          <span className="font-semibold text-slate-800">SJ</span>
         </footer>
       </div>
     </div>
